@@ -19,7 +19,7 @@ Plan steps:
 2. [Contracts](02-contracts.md) — curve, holder-rewards token, v4 graduation, router
 3. [Backend](03-backend.md) — actix-web monolith, db layer rules, Hetzner Ashburn sizing, network isolation
 4. [API definition](04-api.md) — REST /api/v1, image pipeline, WebSocket protocol, WS capacity
-5. Frontend — (next)
+5. Frontend — (next; contracts + backend + devops are live on testnet)
 6. [Devops](05-devops.md) — Hetzner Ashburn + Cloudflare in Terraform, isolation, runbook, costs
 
 Reference: [chain-facts.md](chain-facts.md) — everything verified about Arc testnet, RPC limits, Uniswap status.

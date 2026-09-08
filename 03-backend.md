@@ -152,3 +152,10 @@ Timescale config (`timescaledb-tune`, 8c/64 GB): `shared_buffers 16GB`, `effecti
 3. indexer service against testnet deployment (1 day, from step 1)
 4. REST + WS + stats cache + metadata upload (½ day)
 5. Provision boxes (Terraform hcloud or Robot API for dedicated), vSwitch, nftables, tunnel; deploy; load test WS fan-out (½ day)
+
+
+## Status (8 Sep, late)
+
+Built in `yeet-backend` and verified against the Arc testnet lite stack: indexer backfills from the deploy block, decodes launchpad/graduator/router/PoolManager/token events, writes trades to Timescale and everything else to the app Postgres, and every figure matched on-chain state (dividends total, holders, graduation, pool price). Stats refresher, metadata resolver, Multicall3 pending-rewards, quotes via launchpad/router views, and the binary-candle WebSocket all run. Image builds in GitHub Actions to `ghcr.io/jamesmallon1/yeet-backend`.
+
+Two indexer lessons worth keeping: (1) a token created inside a backfill window is not in that window's address filter, so the indexer does a second `eth_getLogs` for newly discovered tokens over the same range; (2) v4 `Swap` events name the router as sender, so the router's own `Swapped` event in the same tx supplies the end user.
