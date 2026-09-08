@@ -209,3 +209,18 @@ FeesWithdrawn(address to, uint256 amount)
 - Pool LP fee 0; protocol earns via the hook only. LPs other than us earn nothing (nobody else is expected to LP a meme pool anyway).
 - Sellers do not earn dividends on their own sale; buyers do earn on their own buy (first buyer effectively pays no dividend).
 - Metadata immutable after creation.
+
+## Status (8 Sep, late)
+
+Built, tested (31 tests: fuzz curve math, dividend ledger invariants, full curve → graduation, hook fees on all four swap shapes, foreign-pool rejection) and **deployed to Arc testnet** from `yeet-launchpad-evm`.
+
+Deviation from the design above: the curve parameters (`vUsdc0`, `target`) are **constructor immutables** rather than compile-time constants, so testnet runs two stacks with identical code and curve shape:
+
+| Stack | Curve | File | Launchpad |
+|---|---|---|---|
+| production params | 3,500 / 10,000 USDC | `deployments/5042002.json` | `0x80BC79DF1F17C94a8F0f3F88654a918ad05ec85b` |
+| lite (E2E testing) | 3.5 / 10 USDC | `deployments/5042002-lite.json` | `0x1b1D1dcB4Ebae71A3395B83e8b154134732bF1b6` |
+
+Shared self-deployed v4 PoolManager `0x6fa81c42cbD63791f5085D181b3fb82EC9EE504C`. On-chain smoke test on the lite stack passed end to end (create + 5% dev buy, sell, buys to completion, atomic graduation, router buy/sell through the hook, dividend claim of 0.3357 USDC). Arcscan verification pending (anonymous API is rate-limited; needs an Arcscan API key).
+
+Owner on testnet = deployer key. Mainnet: `OWNER=<hardware wallet>` at deploy; owner then calls `launchpad.initialize` and `hook.acceptOwnership`.
