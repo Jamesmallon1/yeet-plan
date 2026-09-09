@@ -42,7 +42,9 @@ Response `200`:
     "pair_type": "uniswap_v4" | "launchpad",
     "tax_bps": 300,
     "dollar_rewards_distributed": "1520.44",   // Σ DividendNotified, USDC
-    "your_pending_rewards": "3.21" | null,     // claimable(wallet) via Multicall3, null when no wallet
+    "your_pending_rewards": null,              // deprecated: the client reads claimable() itself via Multicall3 (no server RPC per user)
+    "reserves": { "venue": "curve"|"uniswap_v4", "fee_bps": 330, "v_usdc": "…", "v_token": "…", "curve_remaining": "…",
+                  "sqrt_price_x96": "…", "liquidity": "…", "launchpad": "0x…", "router": "0x…" },   // raw 18-dec ints; client quotes locally (src/lib/quote.ts), updated on every tick
     "created_at": 1788885479,
     "creator": "0x…",
     "links": { "website": "…", "twitter": "…", "telegram": "…" }
