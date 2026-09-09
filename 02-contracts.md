@@ -224,3 +224,14 @@ Deviation from the design above: the curve parameters (`vUsdc0`, `target`) are *
 Shared self-deployed v4 PoolManager `0x6fa81c42cbD63791f5085D181b3fb82EC9EE504C`. On-chain smoke test on the lite stack passed end to end (create + 5% dev buy, sell, buys to completion, atomic graduation, router buy/sell through the hook, dividend claim of 0.3357 USDC). Arcscan verification pending (anonymous API is rate-limited; needs an Arcscan API key).
 
 Owner on testnet = deployer key. Mainnet: `OWNER=<hardware wallet>` at deploy; owner then calls `launchpad.initialize` and `hook.acceptOwnership`.
+
+
+## Update (9 Sep) — green candle split, protocol buybacks, snipe tax
+
+Three mechanics added, all deployed on both testnet stacks (new addresses in `yeet-launchpad-evm/deployments/`; the previous stacks are retired):
+
+1. **Dividend split ("green candle").** At launch the creator picks, next to the 0/1/3% rate, what share of every dividend buys the token back and burns it (0..100%); the rest is paid to holders in USDC. On the curve the buyback is executed inside the same trade (moves the curve like any buy, tokens to `0xdead`). After graduation the hook accumulates `pendingBurn[token]` and anyone can call `executeBuyback(token)` — the backend keeper does, every 15 s when ≥ 0.25 USDC is pending. A hook cannot re-enter its own pool from inside a swap callback, which is why the pool phase is two-step.
+2. **Protocol fees → buyback + burn, immutable.** `YeetBuyback` receives 100% of protocol fees (launchpad and hook both `sweepFees()` into it; anyone can call). It has no withdraw. `setToken` works exactly once. `execute()` (permissionless; keeper) buys the protocol token from the curve while it is on the curve, from its Uniswap v4 pool after graduation, and burns everything. Protocol buybacks pay no protocol fee on themselves (fees on fees), but do pay the token's dividend. Mainnet order: deploy stack → launch the protocol token → `setToken` from the owner wallet.
+3. **Snipe tax.** Buys within `SNIPE_TAX_SECONDS = 3` of creation pay `9900 bps >> (2 × elapsed seconds)`: 99% → 24.75% → 6.19% → 1.55% → 0. Dev buy in the creation tx is exempt. The tax is paid into the token's own split. `snipeTaxSeconds()` and `snipeTaxBps(token)` are public.
+
+Testnet lite stack protocol token: YEET `0x12445cFF5bffc535325fDD7f7B80D59E76fD5ABE` (bound to the lite buyback contract). 41 tests pass. Keeper key = deployer on testnet.

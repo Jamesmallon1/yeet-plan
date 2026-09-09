@@ -171,3 +171,8 @@ JSON frames:
 Realistic answer: **50 000 concurrent viewers per box is comfortable, 100 000+ is achievable with the sysctl tuning above and a couple of tunnel replicas, and the first thing to run out is Cloudflare tunnel throughput, not the machine.** We set a hard cap of 100 000 accepted sockets and expose the count as a metric. A second AX42-1 behind the same tunnel hostname doubles it; the WS layer is stateless except for the per-key tickers, which each box runs independently.
 
 For scale: pump.fun's biggest days were on the order of tens of thousands of concurrent users site-wide.
+
+
+## Update (9 Sep) — new fields
+
+Token items: `burn_share_bps`, `burned_tokens`, `burned_usdc`, `pending_burn_usdc`, `snipe_tax_total`. `reserves` gains `tax_bps`, `burn_share_bps`, `snipe_tax_seconds` (3) and `created_at`, so the client computes the snipe tax locally (`9900 >> 2*elapsed`, curve buys only) and shows a countdown. Server-side analytics events: `token_buyback_burn`, `protocol_buyback_burn`; `trade_onchain` carries `burn_usdc` and `snipe_tax_usdc`.
