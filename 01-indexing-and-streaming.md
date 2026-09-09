@@ -7,7 +7,7 @@ Fixed decisions (agreed 8 Sep):
 - **USDC is the native quote token everywhere.** The curve is priced in native USDC (`msg.value`), the graduation pool is native USDC / token. No wrapper, no other quote asset.
 - **Storage is TimescaleDB.** We store decoded trades only, never raw transactions or receipts. Charts come from continuous aggregates.
 - **1m is the only materialised base candle.** 5m/15m/1h/4h/1d are hierarchical continuous aggregates built on the 1m one.
-- **RPC is QuickNode on testnet and mainnet**, public Circle endpoint as fallback. No self-hosted node.
+- **RPC: Circle public endpoint is primary, QuickNode (free Discover tier) is the failover** (decided 9 Sep after measuring: ~2 calls/s from the indexer, user-driven reads cached 2–5 s). No self-hosted node.
 
 ## Ingest: own pull-based indexer in the Rust backend
 
